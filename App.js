@@ -1,12 +1,38 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { 
+  StyleSheet, 
+  FlatList, 
+  SafeAreaView,
+  View
+} from 'react-native';
+import {
+  getPosts
+} from './services';
+
+import Post from './components/Post';
 
 export default function App() {
+  const [posts, setPosts] = useState([]);
+
+  // Use as of DidMount.
+  useEffect(() => { 
+    getPosts((data) => setPosts(data)); 
+  }, []);
+
+  const renderItem = ({item}) => <Post id={item.id} title={item.title} body={item.body}/>
+
+  const separator = () => <View style={styles.separator}></View>
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <SafeAreaView style={styles.container}>
+      <FlatList
+        data={posts}
+        renderItem={renderItem}
+        keyExtractor={post => post.id}
+        ItemSeparatorComponent={separator}
+        style={styles.list}
+      />
+    </SafeAreaView>
   );
 }
 
@@ -17,4 +43,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  separator: {
+    borderWidth: 1,
+    padding: 2,
+    margin: 2
+  },
+  list: {
+    flex: 1,
+    marginTop: 30
+  }
 });
